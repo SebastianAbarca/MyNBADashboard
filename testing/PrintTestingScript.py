@@ -1,4 +1,10 @@
 import requests
+from matplotlib import image as mpimg, pyplot as plt
+import plotly.graph_objects as go
+from PIL import Image
+import numpy as np
+
+
 
 class TestPlayerDataAdvancedEndpoints:
     def __init__(self):
@@ -105,7 +111,7 @@ class TestShotChartDataEndpoints:
 
 
 
-
+'''
 # Initialize each test class and run the methods
 player_data_advanced = TestPlayerDataAdvancedEndpoints()
 player_data_advanced.name_endpoint()
@@ -133,3 +139,91 @@ shot_chart_data.base_endpoint()
 shot_chart_data.name_endpoint()
 shot_chart_data.season_endpoint()
 
+
+# Load the court diagram image
+court_img_path = 'court.png'  # Replace with your actual image path
+
+court_img = mpimg.imread(court_img_path)
+
+
+# Get image dimensions
+image_width, image_height = court_img.shape[:2]
+
+# Sample data point (replace with your actual data)
+data_point = {
+    "id": 33253,
+    "playerName": "LeBron James",
+    "top": 93,
+    "left": 95
+}
+
+# Normalize data points
+normalized_top = data_point["top"] / image_height
+normalized_left = data_point["left"] / image_width
+
+# Create a figure object
+fig = go.Figure()
+
+fig.add_layout_image(
+    x=0,  # x position of the bottom left corner
+    y=0,  # y position of the bottom left corner
+    sizex=image_width,  # width of the image
+    sizey=image_height,  # height of the image
+    source=court_img_path,  # path or data of the image
+)
+
+
+# Create scatter trace for data point
+trace = go.Scatter(
+    x=[normalized_left * image_width],  # List of x-coordinates
+    y=[normalized_top * image_height],   # List of y-coordinates
+    mode="markers",  # Set to 'markers' for scatter plot
+    marker=dict(size=50, color="red", symbol="circle"),  # Marker properties
+)
+
+# Add trace to the figure
+fig.add_trace(trace)
+
+# Display the plot
+fig.show()
+'''
+
+# Load the court diagram image
+court_img_path = '../court.png'  # Replace with your actual image path
+court_img = mpimg.imread(court_img_path)
+
+# Get image dimensions
+image_width, image_height = court_img.shape[:2]
+
+# Sample data point (replace with your actual data)
+data_point = {
+    "id": 33253,
+    "playerName": "LeBron James",
+    "top": 93,
+    "left": 95,
+    "result": False,  # Change to False for red marker
+    "distance": 15
+}
+
+# Normalize data points
+normalized_top = data_point["top"] / image_height
+normalized_left = data_point["left"] / image_width
+
+
+# Create the plot figure
+fig, ax = plt.subplots(figsize=(image_width/100, image_height/100))  # Adjust figsize for clarity
+
+# Turn off axis visibility
+ax.axis('off')
+
+# Display the court image
+ax.imshow(court_img, aspect='auto', extent=(0, image_width, 0, image_height))  # Set extent for correct placement
+
+# Set marker color based on result
+marker_color = 'green' if data_point["result"] else 'red'
+
+# Plot the data point
+point = ax.scatter(normalized_left * image_width, normalized_top * image_height, s=50, c=marker_color, marker='o')  # Adjust marker size and color
+
+# Display the plot
+plt.show()

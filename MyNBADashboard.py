@@ -52,9 +52,10 @@ elif selected_option == "Shot Charts":
             shot_chart_dataFrame = pd.DataFrame(shot_chart_data)
             st.write(shot_chart_dataFrame.describe())
             st.dataframe(shot_chart_data)
-            plot_type = st.radio('Plot Type:', ['Scatter plot', 'Bar plot'])
+            plot_type = st.radio('Plot Type:', ['Scatter plot', 'Bar plot', 'Shot map'])
+
             if plot_type == 'Scatter plot':
-                scatter_columns = ['','qtr', 'timeRemaining', 'distanceFt', 'opponent']
+                scatter_columns = ['qtr', 'timeRemaining', 'distanceFt', 'opponent']
                 scatter_df = shot_chart_dataFrame[scatter_columns]
                 selected_columns = st.multiselect("Statistical Categories", scatter_columns, max_selections=2)
                 st.markdown(f"Selected columns: {selected_columns}")
@@ -69,3 +70,8 @@ elif selected_option == "Shot Charts":
                 if bar_option:
                     bar_fig = gh.create_bar_chart(shot_chart_data, selected_player, bar_option)
                     st.plotly_chart(bar_fig, use_container_width=True)
+
+
+            if plot_type == 'Shot map':
+                shot_map = gh.create_shot_map(shot_chart_data, selected_player)
+                st.pyplot(shot_map, use_container_width=True)

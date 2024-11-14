@@ -1,9 +1,8 @@
-import streamlit as st
-import requests
-import json
+import os
 import plotly.graph_objects as go
 import pandas as pd
 import seaborn as sns
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import datetime as datetime
 import numpy as np
@@ -112,7 +111,6 @@ def create_scatter_plot(shot_chart_df, selected_player, x_column, y_column):
     return fig
 
 
-
 def create_bar_chart(shot_chart_data, selected_player, x_axis):
     df = pd.DataFrame(shot_chart_data)
 
@@ -143,5 +141,46 @@ def create_bar_chart(shot_chart_data, selected_player, x_axis):
         yaxis_title='Count',
         barmode='stack'
     )
+
+    return fig
+
+def create_shot_map(shot_data, selected_player):
+    """
+    Creates a shot map using matplotlib.
+
+    Args:
+        shot_chart_data (DataFrame): DataFrame containing shot chart data.
+        selected_player (str): Name of the selected player.
+
+    Returns:
+        fig (Figure): figure object.
+    """
+    shot_chart_data = pd.DataFrame(shot_data)
+
+    # Load the court diagram image
+    court_img_path = 'court.png'  # Replace with your actual image path
+    court_img = mpimg.imread(court_img_path)
+
+    # Get image dimensions
+    image_width, image_height = court_img.shape[:2]
+
+    # Create the plot figure
+    fig, ax = plt.subplots(figsize=(image_width / 100, image_height / 100))  # Adjust figsize for clarity
+
+    # Turn off axis visibility
+    ax.axis('off')
+
+    successful_shots = shot_chart_data[shot_chart_data['result'].astype(bool) == True]
+    missed_shots = shot_chart_data[shot_chart_data['result'].astype(bool) == False]
+
+    # Display the court image
+    ax.imshow(court_img, aspect='auto', extent=(0, image_width, 0, image_height), zorder=1)  # Set extent for correct placement
+
+    # Plot missed shots
+    ax.scatter(missed_shots['left'] * image_width, missed_shots['top'] * image_height, s=50, c='red', marker='x', alpha=.5, zorder=2)
+
+    # Plot successful shots
+    ax.scatter(successful_shots['left'] * image_width, successful_shots['top'] * image_height, s=50, c='green', marker='o', alpha=0.5, zorder=3)
+
 
     return fig
