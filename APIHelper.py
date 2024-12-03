@@ -1,5 +1,5 @@
 import requests
-
+import streamlit as st
 
 class NbaApiHelper:
     class PlayerDataAdvanced:
@@ -76,8 +76,8 @@ class NbaApiHelper:
 
         def distinct_names_endpoint(self):
             response = requests.get(f"{self.base_url}/distinct-player-names")
-            return response.json()
             print(f"ShotChartData Distinct Names Endpoint: Status Code = {response.status_code}")
+            return response.json()
             ##NOTE: FOR SHOT CHART DATA PLAYER HAS TO COME FROM THIS LIST
 
         def name_endpoint(self, name, year):

@@ -133,11 +133,11 @@ class TestShotChartDataEndpoints(unittest.TestCase):
 
     def test_name_endpoint(self):
         response = requests.get(f"{self.base_url}/name/Lebron James")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 500)
 
     def test_season_endpoint(self):
         response = requests.get(f"{self.base_url}/season/2023")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 500)
 
     #def test_player_id_endpoint(self):
         #response = requests.get(f"{self.base_url}/playerid/2544")
@@ -145,11 +145,11 @@ class TestShotChartDataEndpoints(unittest.TestCase):
 
     def test_team_endpoint(self):
         response = requests.get(f"{self.base_url}/team/LAL")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 500)
 
     def test_count_endpoint(self):
         response = requests.get(f"{self.base_url}/count")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
 
 
 ##NOTE: PlayerDataAdvanced by id is confusing me

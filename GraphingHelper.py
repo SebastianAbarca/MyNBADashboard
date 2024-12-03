@@ -1,5 +1,7 @@
 import os
+import streamlit as st
 import plotly.graph_objects as go
+import plotly.express as px
 import pandas as pd
 import seaborn as sns
 import matplotlib.image as mpimg
@@ -7,6 +9,8 @@ import matplotlib.pyplot as plt
 import datetime as datetime
 import numpy as np
 from APIHelper import NbaApiHelper
+import cv2
+import base64
 
 
 def create_scatter_plot(shot_chart_df, selected_player, x_column, y_column):
@@ -144,43 +148,50 @@ def create_bar_chart(shot_chart_data, selected_player, x_axis):
 
     return fig
 
-def create_shot_map(shot_data, selected_player):
-    """
-    Creates a shot map using matplotlib.
+def shotChartVisual(dataFrame, selected_player):
+    with open('nba_court.png', 'rb') as img_file:
+        encoded_string = base64.b64encode(img_file.read()).decode('utf-8')
+        court_image = dict(
+            source=f'data:image/png;base64,{encoded_string}',
+            xref="x",
+            yref="y",
+            x=-240,
+            y=380,
+            sizex=480,
+            sizey=380,
+            sizing="stretch",
+            opacity=0.5
+        )
 
-    Args:
-        shot_chart_data (DataFrame): DataFrame containing shot chart data.
-        selected_player (str): Name of the selected player.
+    fig = go.Figure()
 
-    Returns:
-        fig (Figure): figure object.
-    """
-    shot_chart_data = pd.DataFrame(shot_data)
+    # Add court outline
+    fig.update_layout(
+        images=[court_image],
+        xaxis_range=[-250, 250],
+        yaxis_range=[-50, 450],
+        xaxis_showticklabels=False,
+        yaxis_showticklabels=False,
+        title=f"{selected_player} Shot Chart"
+    )
+    # Add scatter trace for shots
+    fig.add_trace(go.Scatter(
+        x=dataFrame['LOC_X'],
+        y=dataFrame['LOC_Y'],
+        mode='markers',
+        marker=dict(
+            size=10,
+            color='red',
+            colorscale='RdYlGn',
+            showscale=True
+        ),
+        opacity=1,
+        hovertext=dataFrame['SHOT_TYPE'],
+        hoverinfo='text'
+    ))
 
-    # Load the court diagram image
-    court_img_path = 'court.png'  # Replace with your actual image path
-    court_img = mpimg.imread(court_img_path)
+    return fig
 
-    # Get image dimensions
-    image_width, image_height = court_img.shape[:2]
-
-    # Create the plot figure
-    fig, ax = plt.subplots(figsize=(image_width / 100, image_height / 100))  # Adjust figsize for clarity
-
-    # Turn off axis visibility
-    ax.axis('off')
-
-    successful_shots = shot_chart_data[shot_chart_data['result'].astype(bool) == True]
-    missed_shots = shot_chart_data[shot_chart_data['result'].astype(bool) == False]
-
-    # Display the court image
-    ax.imshow(court_img, aspect='auto', extent=(0, image_width, 0, image_height), zorder=1)  # Set extent for correct placement
-
-    # Plot missed shots
-    ax.scatter(missed_shots['left'] * image_width, missed_shots['top'] * image_height, s=50, c='red', marker='x', alpha=.5, zorder=2)
-
-    # Plot successful shots
-    ax.scatter(successful_shots['left'] * image_width, successful_shots['top'] * image_height, s=50, c='green', marker='o', alpha=0.5, zorder=3)
-
-
+def histogram(dataFrame, selected_columns):
+    fig = px.histogram(dataFrame, x=selected_columns, barmode='overlay')
     return fig
