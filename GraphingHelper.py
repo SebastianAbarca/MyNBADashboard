@@ -3,13 +3,8 @@ import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
-import seaborn as sns
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
-import datetime as datetime
 import numpy as np
 from APIHelper import NbaApiHelper
-import cv2
 import base64
 
 
@@ -147,6 +142,7 @@ def create_bar_chart(shot_chart_data, selected_player, x_axis):
     )
 
     return fig
+
 
 def shotChartVisual(dataFrame, selected_player):
     with open('nba_court.png', 'rb') as img_file:
